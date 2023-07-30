@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/EclipIIse/exchanger/internal/clients/exchange"
 	"os"
 	"os/signal"
 	"syscall"
@@ -15,7 +16,8 @@ import (
 func main() {
 	logger := zerolog.New(zerolog.ConsoleWriter{Out: os.Stderr})
 
-	srv := service.New(logger)
+	client := exchange.New("https://open.er-api.com/v6")
+	srv := service.New(logger, client)
 	handler := handlers.New(logger, srv)
 	server := transport.NewServer("127.0.0.1:8000").WithHandler(handler)
 

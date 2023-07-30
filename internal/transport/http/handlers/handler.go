@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"github.com/EclipIIse/exchanger/internal/models"
 	"net/http"
 
 	"github.com/rs/zerolog"
@@ -9,7 +10,7 @@ import (
 
 type Service interface {
 	GetLocalCurrencyHistory() error
-	GetCurrency() (string, error)
+	GetCurrency() (*models.CurrencyResponse, error)
 }
 
 type Handler struct {

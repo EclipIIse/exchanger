@@ -20,11 +20,11 @@ func New(host string) *Client {
 	return &Client{host: host}
 }
 
-func (c *Client) request(method string, data []byte) (int, []byte, error) {
+func (c *Client) request(httpMethod string, method string, data []byte) (int, []byte, error) {
 	const timeout = time.Second * 10
 
 	requestBody := bytes.NewReader(data)
-	req, err := http.NewRequest(http.MethodPost, c.host+method, requestBody)
+	req, err := http.NewRequest(httpMethod, c.host+method, requestBody)
 	if err != nil {
 		return 0, nil, errors.Wrap(err, "exchange create request fail")
 	}
@@ -45,15 +45,10 @@ func (c *Client) request(method string, data []byte) (int, []byte, error) {
 	return response.StatusCode, responseBody, nil
 }
 
-func (c *Client) GetCurrency(request *models.MyModel) (*models.MyModel, error) {
-	const method = ""
+func (c *Client) GetCurrency() (*models.CurrencyResponse, error) {
+	const method = "/latest/RUB"
 
-	requestBody, err := json.Marshal(request)
-	if err != nil {
-		return nil, errors.Wrap(err, "marshal request failed")
-	}
-
-	code, responseBody, err := c.request(method, requestBody)
+	code, responseBody, err := c.request(http.MethodGet, method, nil)
 	if err != nil {
 		return nil, errors.Wrap(err, "sales funnel request failed")
 	}
@@ -62,7 +57,7 @@ func (c *Client) GetCurrency(request *models.MyModel) (*models.MyModel, error) {
 		return nil, fmt.Errorf("%s retrun code %d with body %s", method, code, string(responseBody))
 	}
 
-	response := new(models.MyModel)
+	response := new(models.CurrencyResponse)
 	if err = json.Unmarshal(responseBody, response); err != nil {
 		return nil, errors.Wrap(err, "currency unmarshall response failed")
 	}
